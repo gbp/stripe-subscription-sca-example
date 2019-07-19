@@ -11,3 +11,21 @@ get '/' do
   status 200
   erb :index
 end
+
+post '/subscribe' do
+  token = Stripe::Token.retrieve(params[:stripeToken])
+
+  customer = Stripe::Customer.create(
+    source: token,
+    name: params['name'],
+    email: params['email']
+  )
+
+  subscription = Stripe::Subscription.create(
+    customer: customer.id,
+    items: [{ plan: ENV['STRIPE_PLAN'] }],
+    payment_behavior: 'allow_incomplete'
+  )
+
+  subscription.inspect
+end
