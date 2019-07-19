@@ -4,7 +4,67 @@
   <title>Stripe SCA</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    body {
+      width: 500px;
+      margin: 20px auto;
+    }
+
+    #card-element {
+      margin: 20px 0;
+    }
+  </style>
 </head>
 <body>
+
+<form id="subscription-form" action="/subscribe" method="post">
+  <div>
+    <label for="name">Name</label>
+    <input name="name" id="name" type="text" value="Alice" required="" autocomplete="name">
+  </div>
+  <div>
+    <label for="email">Email</label>
+    <input name="email" id="email" type="email" value="alice@example.com" required="" autocomplete="email">
+  </div>
+  <div id="card-element"></div>
+  <p id="card-errors"></p>
+  <button type="submit">Subscribe</button>
+</form>
+
+<script>
+  var stripe = Stripe('<%= ENV['STRIPE_PUBLISHABLE_KEY'] %>');
+
+  var elements = stripe.elements({
+    // Supported locale are:
+    //    da, de, en, es, fi, fr, it, ja, nb, nl, pl, pt, sv, zh
+    locale: '<%= ENV['LOCALE'] || 'auto' %>'
+  });
+
+  var style = {
+    base: {
+      // Add your base input styles here. For example:
+      fontSize: '16px'
+    }
+  };
+
+  // Create an instance of the card Element.
+  var card = elements.create('card', { style: style });
+
+  // Add an instance of the card Element into the `card-element` <div>.
+  card.mount('#card-element');
+
+  // Listen to change events on the card Element and display any errors
+  card.addEventListener('change', function(event) {
+    var displayError = document.getElementById('card-errors');
+    if (event.error) {
+      displayError.textContent = event.error.message;
+    } else {
+      displayError.textContent = '';
+    }
+  });
+</script>
+
 </body>
 </html>
