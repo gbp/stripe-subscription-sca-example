@@ -1,6 +1,7 @@
 require 'dotenv'
 require 'json'
 require 'sinatra'
+require 'sinatra/reloader' if development?
 require 'stripe'
 
 Dotenv.load
