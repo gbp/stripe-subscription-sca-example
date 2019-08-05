@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stripe SCA</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+
+<script>
+  var stripe = Stripe('<%= ENV['STRIPE_PUBLISHABLE_KEY'] %>');
+
+  stripe.handleCardPayment(
+    '<%= @payment_intent_client_secret %>'
+  ).then(function(result) {
+    location.reload();
+  });
+</script>
+
+</body>
+</html>

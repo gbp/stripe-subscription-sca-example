@@ -63,12 +63,8 @@ def check_payment_intent(subscription, invoice, payment_intent)
   # See: https://stripe.com/docs/payments/payment-intents/migration#api-version
   case payment_intent.status
   when 'requires_source_action', 'require_action'
-    payment_intent = payment_intent.confirm(
-      return_url: "http://0.0.0.0:5000/sub/#{subscription.id}/callback"
-    )
-    # payment_intent.next_action.type should eq 'redirect_to_url' as we're not
-    # confirming the payment_intent with Stripe.js
-    redirect to(payment_intent.next_action.redirect_to_url.url)
+    @payment_intent_client_secret = payment_intent.client_secret
+    erb :confirm
 
   # when 'requires_source', 'requires_payment_method'
     # 1. Notify customer of failure and collect a new payment method
